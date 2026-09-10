@@ -12,7 +12,7 @@
 
 <header class="site-header">
   <div class="wrap header-inner">
-    <a href="#top" class="logo">R3<span>BORN</span> TECH</a>
+    <a href="#top" class="logo"><img src="logo.png" alt="R3born Tech" class="logo-img"></a>
     <nav class="nav">
       <a href="#om-oss">Om oss</a>
       <a href="#tjanster">Tjänster</a>
@@ -80,6 +80,7 @@
       <h2>Flipup Challenge</h2>
       <p>Följ serien där vi flippar gamingdatorer från 1 000 kr — från fyndköp till färdig speldator. Nya avsnitt på YouTube och TikTok.</p>
       <a href="https://www.youtube.com/@R3bornTech" target="_blank" rel="noopener" class="btn btn-primary">Se på YouTube</a>
+      <div id="latest-video" class="latest-video"></div>
     </div>
   </section>
 
@@ -114,6 +115,45 @@ navToggle.addEventListener("click", () => {
 nav.querySelectorAll("a").forEach((link) => {
   link.addEventListener("click", () => nav.classList.remove("open"));
 });
+
+// Senaste videon från YouTube
+const YT_API_KEY = "AIzaSyCCR49KpV4xjw_uJWSqmy49XNFod6zZ1WM";
+const YT_UPLOADS_PLAYLIST = "UUqmMuHsg_Vi_RpP4tFmNGPg";
+
+fetch(`https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=1&playlistId=${YT_UPLOADS_PLAYLIST}&key=${YT_API_KEY}`)
+  .then((res) => res.json())
+  .then((data) => {
+    const item = data.items && data.items[0];
+    const container = document.getElementById("latest-video");
+    if (!item || !container) return;
+
+    const snippet = item.snippet;
+    const videoId = snippet.resourceId.videoId;
+    const thumbUrl = (snippet.thumbnails.medium || snippet.thumbnails.default).url;
+
+    const link = document.createElement("a");
+    link.href = `https://www.youtube.com/watch?v=${videoId}`;
+    link.target = "_blank";
+    link.rel = "noopener";
+    link.className = "video-card";
+
+    const img = document.createElement("img");
+    img.src = thumbUrl;
+    img.alt = snippet.title;
+    img.loading = "lazy";
+
+    const label = document.createElement("span");
+    label.className = "video-card-label";
+    label.textContent = "Senaste avsnittet";
+
+    const title = document.createElement("span");
+    title.className = "video-card-title";
+    title.textContent = snippet.title;
+
+    link.append(img, label, title);
+    container.appendChild(link);
+  })
+  .catch(() => {});
 </script>
 </body>
 </html>

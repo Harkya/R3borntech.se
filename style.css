@@ -45,15 +45,15 @@ body {
 }
 
 .logo {
-  font-weight: 800;
-  font-size: 1.25rem;
-  letter-spacing: 0.02em;
-  color: var(--text);
+  display: flex;
+  align-items: center;
   text-decoration: none;
 }
 
-.logo span {
-  color: var(--turquoise);
+.logo-img {
+  height: 28px;
+  width: auto;
+  display: block;
 }
 
 .nav {
