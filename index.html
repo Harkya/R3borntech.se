@@ -87,9 +87,27 @@
   <section id="kontakt" class="section">
     <div class="wrap">
       <h2>Kontakt</h2>
-      <p>Enklaste sättet att nå oss just nu är via YouTube — fler kontaktvägar kommer snart.</p>
-      <div class="hero-actions">
-        <a href="https://www.youtube.com/@R3bornTech" target="_blank" rel="noopener" class="btn btn-primary">YouTube: @R3bornTech</a>
+      <p>Skicka ett meddelande så hör vi av oss, eller hitta oss på YouTube.</p>
+
+      <form id="contact-form" class="contact-form">
+        <label>
+          Namn
+          <input type="text" name="name" autocomplete="name" required>
+        </label>
+        <label>
+          E-post
+          <input type="email" name="email" autocomplete="email" required>
+        </label>
+        <label>
+          Meddelande
+          <textarea name="message" rows="5" required></textarea>
+        </label>
+        <button type="submit" class="btn btn-primary">Skicka meddelande</button>
+        <p id="contact-status" class="contact-status" aria-live="polite"></p>
+      </form>
+
+      <div class="hero-actions" style="margin-top: 32px; justify-content: flex-start;">
+        <a href="https://www.youtube.com/@R3bornTech" target="_blank" rel="noopener" class="btn btn-outline">YouTube: @R3bornTech</a>
       </div>
     </div>
   </section>
@@ -154,6 +172,38 @@ fetch(`https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResul
     container.appendChild(link);
   })
   .catch(() => {});
+
+// Kontaktformulär
+const contactForm = document.getElementById("contact-form");
+if (contactForm) {
+  contactForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const status = document.getElementById("contact-status");
+    const submitBtn = contactForm.querySelector('button[type="submit"]');
+    const payload = Object.fromEntries(new FormData(contactForm).entries());
+
+    submitBtn.disabled = true;
+    status.textContent = "Skickar...";
+    status.className = "contact-status";
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error("send failed");
+      status.textContent = "Tack! Ditt meddelande är skickat.";
+      status.classList.add("success");
+      contactForm.reset();
+    } catch {
+      status.textContent = "Något gick fel. Testa igen om en stund eller nå oss via YouTube.";
+      status.classList.add("error");
+    } finally {
+      submitBtn.disabled = false;
+    }
+  });
+}
 </script>
 </body>
 </html>
